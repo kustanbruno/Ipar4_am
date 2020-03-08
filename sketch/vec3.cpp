@@ -11,3 +11,12 @@ vec3::vec3(int16_t _x, int16_t _y, int16_t _z){
     y = _y;
     z = _z;
 }
+
+void vec3::printToSerial(){
+        Serial.print(x, DEC);
+        Serial.print (",");
+        Serial.print(y, DEC);
+        Serial.print (",");
+        Serial.print(z, DEC);
+        Serial.println("");
+}
