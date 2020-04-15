@@ -78,3 +78,6 @@ void vec3LinkedList::printToSerial(){
         yield();
     }
 }
+ long vec3LinkedList::getCount(){
+     return count;
+ }

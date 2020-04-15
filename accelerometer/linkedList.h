@@ -28,6 +28,7 @@ class vec3LinkedList{
         vec3 getNth(long i);
         ~vec3LinkedList();
         void printToSerial();
+        long getCount();
 };
 
 #endif
