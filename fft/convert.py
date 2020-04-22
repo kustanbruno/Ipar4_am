@@ -42,8 +42,17 @@ plt.figure(1)
 plt.title('original signal')
 plt.plot(times,yvalues, color="xkcd:salmon", label="original")
 
+
 plt.figure(2)
 plt.plot(freqs[mask], fft_theo[mask], label="true fft values")
 plt.title("True FFT values")
+
+#plt.figure(1)
+#plt.savefig('original.png', dpi=500, quality=100)
+#
+#
+#plt.figure(2)
+#plt.savefig('originaal.png', dpi=500, quality=100)
+
 
 plt.show()
