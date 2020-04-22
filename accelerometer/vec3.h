@@ -9,6 +9,7 @@ class vec3{
     vec3();
     vec3(int16_t _x, int16_t _y, int16_t _z);
     void printToSerial();
+    String toString();
 };
 
 #endif

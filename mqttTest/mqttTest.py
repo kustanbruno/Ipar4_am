@@ -1,6 +1,4 @@
 import paho.mqtt.client as mqtt
-from pprint import pprint
-
 
 server_addr = "152.66.34.82"
 
@@ -9,7 +7,7 @@ def on_connect(client, userdata, flags, rc):
     client.subscribe("ESP32-accelerometer/#")
 
 def on_message(client, userdata, msg):
-    print(client)
+    print(userdata)
     print(msg.topic+" "+str(msg.payload))
 
 

@@ -20,3 +20,13 @@ void vec3::printToSerial(){
         Serial.print(z, DEC);
         Serial.println("");
 }
+
+String vec3::toString(){
+    String data = "";
+    data += x;
+    data += ",";
+    data += y;
+    data += ",";
+    data += z;
+    return data;
+}

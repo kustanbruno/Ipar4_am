@@ -41,3 +41,7 @@ Az i2c kommunikációt kiiktatva csak a láncoltlistát feltöltve, 0.01ms kör�
 Kiválasztandó boardok:  
 8266  NodeMcu1.0
 esp32 
+
+
+#### A yield() függvény  
+Az esp-ben van beépítve egy watchdog, ami újraindítja a rendszert, ha hosszab ideig tart a loop. Ezt nem érdemes kikapcsolni. Ehelyett a hosszabb műveletünkben hívjuk meg a yield() függvényt lehetőleg minél gyakrabban.

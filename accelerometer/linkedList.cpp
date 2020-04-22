@@ -42,7 +42,7 @@ void vec3LinkedList::pushBack(vec3 v){
 /*
 vec3 vec3LinkedList::getNth(long i){
     if(i>=count)
-        TODO throw "INDEX TOO BIG";
+        return current->getData();
     else{
         vec3LinkedListItem* curr = start;
         long currIndex = 0;
@@ -51,7 +51,7 @@ vec3 vec3LinkedList::getNth(long i){
         return curr->getData();
     }
 }
-*/
+*/ 
 vec3LinkedList::~vec3LinkedList(){
     vec3LinkedListItem* curr = start;
     vec3LinkedListItem* next;
@@ -80,4 +80,26 @@ void vec3LinkedList::printToSerial(){
 }
  long vec3LinkedList::getCount(){
      return count;
+ }
+
+ void vec3LinkedList::uploadToMQTT(PubSubClient client, String deviceName){
+     vec3LinkedListItem* curr = start;
+     long i = 0;
+     while(curr != NULL){
+        String data = "";
+        data += String(curr->getTime());
+        data += ",";
+        data += curr->getData().toString();
+        String topic = "";
+        if(i == 0)
+            topic = "ESP32-accelerometer/" + deviceName + "/dataFirst";
+        else if(i < count -1)
+            topic = "ESP32-accelerometer/" + deviceName + "/dataMid";
+        else
+            topic = "ESP32-accelerometer/" + deviceName + "/dataEnd";
+        client.publish(topic.c_str(), data.c_str());
+        curr = curr->getNext();
+        i++;
+        yield();
+     }
  }

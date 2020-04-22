@@ -1,58 +1,52 @@
-import numpy as np
-import matplotlib.pyplot as plt
+import paho.mqtt.client as mqtt
+from dataSet import dataSet
 
-file = open("1v.csv", "r", 1, 'UTF-8-sig')
-data = file.readlines()
-del data[-1]
+server_addr = "152.66.34.82"
 i = 0
-times = []
-yvalues = []
+dataSets = dict()
+
+def on_connect(client, userdata, flags, rc):
+    print("Connected with result code "+str(rc))
+    client.subscribe("ESP32-accelerometer/#")
+
+def on_message(client, userdata, msg):
+    dataType = msg.topic.split("/")[2]
+    device = str(msg.topic.split("/")[1])
+    global i
+    global dataSets
+    if(device in dataSets):
+        data = msg.payload.decode("utf-8").split(",")
+        dataSets[device].addData(data[1], data[2], data[3], data[0])
+    if 'dataFirst' in dataType:
+        dataSets[device] = dataSet(device)
+        data = msg.payload.decode("utf-8").split(",")
+        dataSets[device].addData(data[1], data[2], data[3], data[0])
+    elif 'dataEnd' in dataType:
+        dataSets[device].fft()
+        dataSets[device].createPlots()
+        dataSets[device].showPlots()
+
+    
 
 
-for line in data:
-    line = line.split(';')
-    if data[0] != 'Data\xa0end':
-        if i == 0:
-            times.append(int(line[0]))
-        else:
-            times.append(int(line[0])-times[0])
-        yvalues.append(int(line[1]))
-        i += 1
+client = mqtt.Client()
+client.on_connect = on_connect
+client.on_message = on_message
 
-times[0] = 0
+client.connect(server_addr, 1883, 60)
 
-#Count of points
-n = len(times)
-#Distance between points in time 
-Lx = 0
+client.loop_forever()
 
-for i in range (1, len(times)):
-    #converting from microseconds to seconds
-    times[i] = times[i] / 1000000
-    Lx += times[i] - times[i-1]
+d = dataSet("a")
 
-Lx = Lx / len(times)
-freqs = np.fft.fftfreq(n)
-mask = freqs > 0
-fft_vals = np.fft.fft(yvalues)
+d.addData(1,2,3,4)
+d.addData(0,2,3,5)
+d.addData(1,2,3,6)
+d.addData(0,2,3,7)
+d.addData(1,2,3,8)
+d.addData(0,2,3,9)
 
-fft_theo = 2.0*np.abs(fft_vals/n)
-
-plt.figure(1)
-plt.title('original signal')
-plt.plot(times,yvalues, color="xkcd:salmon", label="original")
-
-
-plt.figure(2)
-plt.plot(freqs[mask], fft_theo[mask], label="true fft values")
-plt.title("True FFT values")
-
-#plt.figure(1)
-#plt.savefig('original.png', dpi=500, quality=100)
-#
-#
-#plt.figure(2)
-#plt.savefig('originaal.png', dpi=500, quality=100)
-
-
-plt.show()
+d.fft()
+d.createPlots()
+d.saveFftPlot("hello.png")
+d.showPlots()

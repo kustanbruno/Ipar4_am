@@ -2,6 +2,7 @@
 #define VEC3_Linked_List_h
 #include "vec3.h"
 #include <Arduino.h>
+#include <PubSubClient.h>
 
 class vec3LinkedListItem{
     private:
@@ -29,6 +30,8 @@ class vec3LinkedList{
         ~vec3LinkedList();
         void printToSerial();
         long getCount();
+        //vec3 vec3LinkedList::getNth(long i);
+        void uploadToMQTT(PubSubClient client, String deviceName);
 };
 
 #endif

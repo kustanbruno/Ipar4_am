@@ -50,27 +50,14 @@ void callback(char *topic, byte *payload, unsigned int length)
     }
 }
 
-void reconnect()
-{
-    // Loop until we're reconnected
-    while (!client.connected())
-    {
+void reconnect(){
+    while (!client.connected()){
         Serial.print("Attempting MQTT connection...");
-        // Create a random client ID
-        String clientId = "ESP32-Accelerometer";
-        //clientId += String(random(0xffff), HEX);
-        // Attempt to connect
-        if (client.connect(clientId.c_str()))
-        {
+        String clientId = "ESP32-Accelerometer";        
+        if (client.connect(clientId.c_str())){
             Serial.println("connected");
-            // Once connected, publish an announcement...
-            client.publish("ESP32-accelerometer/outTopic", "hello world");
-            // ... and resubscribe
-            client.subscribe("ESP32-accelerometer/inTopic");
-            client.subscribe("ESP32-accelerometer/inTopicc");
         }
-        else
-        {
+        else{
             Serial.print("failed, rc=");
             Serial.print(client.state());
             Serial.println(" try again in 5 seconds");
