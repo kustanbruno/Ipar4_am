@@ -23,7 +23,9 @@ class vec3LinkedList{
         vec3LinkedListItem* start;
         vec3LinkedListItem* current;
         long count = 0;
+        long startTime;
     public:
+        void setTime(long time);
         vec3LinkedList();
         void pushBack(vec3 v);
         vec3 getNth(long i);

@@ -17,9 +17,10 @@ Pinout:
 
 
 ### Egy tanulmány arduinoval való rezgés mérésről
-[Tanulmány](https://www.diva-portal.org/smash/get/diva2:839696/FULLTEXT01.pdf)
+[Tanulmány](https://www.diva-portal.org/smash/get/diva2:839696/FULLTEXT01.pdf)  
+Itt analóg szenzorral dolgoznak, ők is eltárolnak valamennyi (512) adatot. És elküldik soroson. Viszont náluk nem korlátozza a sebességet az i2c, így tudnak ms-enként mérni.  
 
-Itt analóg szenzorral dolgoznak, ők is eltárolnak valamennyi (512) adatot. És elküldik soroson. Viszont náluk nem korlátozza a sebességet az i2c, így tudnak ms-enként mérni.
+[NTP lib](https://lastminuteengineers.com/esp8266-ntp-server-date-time-tutorial/)  
 
 ### Megjegyzés
 

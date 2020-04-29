@@ -84,13 +84,13 @@ void vec3LinkedList::printToSerial(){
 
  void vec3LinkedList::uploadToMQTT(PubSubClient client, String deviceName){
      vec3LinkedListItem* curr = start;
+     String topic = "", data = "";
      long i = 0;
      while(curr != NULL){
-        String data = "";
+        data = "";
         data += String(curr->getTime());
         data += ",";
         data += curr->getData().toString();
-        String topic = "";
         if(i == 0)
             topic = "ESP32-accelerometer/" + deviceName + "/dataFirst";
         else if(i < count -1)
@@ -102,4 +102,11 @@ void vec3LinkedList::printToSerial(){
         i++;
         yield();
      }
+     topic = "ESP32-accelerometer/" + deviceName + "/startTime";
+     data = String(startTime);
+     client.publish(topic.c_str(), data.c_str());
+ }
+
+ void vec3LinkedList::setTime(long time){
+     startTime = time;
  }

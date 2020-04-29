@@ -3,6 +3,7 @@
         {
             "name": "Win32",
             "includePath": [
+                "C:\\Users\\Brunó\\Documents\\Arduino\\libraries\\EasyNTPClient\\src",
                 "C:\\Users\\Brunó\\AppData\\Local\\Arduino15\\packages\\esp32\\tools\\**",
                 "C:\\Users\\Brunó\\AppData\\Local\\Arduino15\\packages\\esp32\\hardware\\esp32\\1.0.4\\**",
                 "C:\\Users\\Brunó\\AppData\\Local\\Arduino15\\packages\\esp8266\\tools\\**",

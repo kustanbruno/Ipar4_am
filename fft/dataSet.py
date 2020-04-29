@@ -1,14 +1,17 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from influxdb import InfluxDBClient
 
 class dataSet:
-    
+    startTime = 0
+
     def __init__(self, device):
         self.deviceName = device
         self.xVals = []
         self.yVals = []
         self.zVals = []
         self.times = []
+        self.influxConnection = None
     
     def addData(self,x,y,z,t):
         self.xVals.append(int(x))
@@ -54,3 +57,21 @@ class dataSet:
     def saveFftPlot(self, filename):
         plt.figure(2)
         plt.savefig(filename, dpi=500, quality=100)
+
+    def sendToInfluxDB(self, database):
+        json = [
+            {
+                "measurement": "CNC1",
+                "tags": {
+                    "deviceName": self.deviceName
+                },
+                "time": self.startTime,
+                "fields": {
+                    "xVals": "jaj"
+                }
+            }
+        ]
+        try:
+            self.influxConnection.write_points(json)
+        except Exception as e: 
+            print(e)
