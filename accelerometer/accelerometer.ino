@@ -1,5 +1,3 @@
-#include <EasyNTPClient.h>
-
 #include <Arduino.h>
 #include "mpu9250.h"
 #include "vec3.h"
@@ -7,6 +5,7 @@
 #include "WiFi.h"
 #include <PubSubClient.h>
 #include <NTPClient.h>
+#include <WiFiUDP.h>
 
 //CONFIG
 const char *ssid = "kustan";
@@ -25,8 +24,12 @@ unsigned long currentTime;
 long absoluteTime;
 
 unsigned long start;
-vec3LinkedList* list = new vec3LinkedList();
+vec3LinkedList* list1 = new vec3LinkedList();
+vec3LinkedList* list2 = new vec3LinkedList();
 int i = 0;
+
+TaskHandle_t Task1;
+TaskHandle_t Task2;
 
 void connectToWifi(){
     WiFi.begin(ssid, password);
@@ -72,8 +75,27 @@ void setup(){
 
     mqtt_client.setServer(mqtt_server, 1883);
     mqtt_client.setCallback(callback);
+
+    //create a task that will be executed in the Task1code() function, with priority 1 and executed on core 0
+    xTaskCreatePinnedToCore(
+                      collectingCore,   /* Task function. */
+                      "Task1",     /* name of task. */
+                      10000,       /* Stack size of task */
+                      NULL,        /* parameter of the task */
+                      1,           /* priority of the task */
+                      &Task1,      /* Task handle to keep track of created task */
+                      0);          /* pin task to core 0 */                  
+
+    //create a task that will be executed in the Task2code() function, with priority 1 and executed on core 1
+    xTaskCreatePinnedToCore(
+                      uploadingCore,   /* Task function. */
+                      "Task2",     /* name of task. */
+                      10000,       /* Stack size of task */
+                      NULL,        /* parameter of the task */
+                      1,           /* priority of the task */
+                      &Task2,      /* Task handle to keep track of created task */
+                      1);          /* pin task to core 1 */
     
-    start = micros();
     Serial.println("Started");
 }
 
@@ -83,28 +105,58 @@ void mqttConnectionHealth(){
     mqtt_client.loop();
 }
 
-void loop(){
-    mqttConnectionHealth();
-    if(i == 0){
-        timeClient.update();
-        absoluteTime = timeClient.getEpochTime();
-    }
-    if(i < 2000){
+void collect(vec3LinkedList* list){
+    timeClient.update();
+    absoluteTime = timeClient.getEpochTime();
+    list->setTime(absoluteTime);
+    while(i < 2000){
         mpu.updateGyroscopeAndAccelerometerData();
         vec3 accelerometer = mpu.getAccelerometerData();
         list->pushBack(accelerometer);
         i++;
-    }else{
-        Serial.println(timeClient.getEpochTime());
-        i=0;
-        Serial.println("publishing");
-        list->setTime(absoluteTime);
-        list->uploadToMQTT(mqtt_client, deviceName);
-        Serial.println("published");
-        delete list;
-        list = new vec3LinkedList();
-        start = micros();
-        timeClient.update();
-        absoluteTime = timeClient.update();
+        yield();
     }
+}
+
+void collectingCore(void * pvParameters){
+    while(true){
+        i = 0;
+        if(list1->empty){
+            list1->empty = false;
+            Serial.println("collecting to list1");
+            collect(list1);
+            Serial.println("collected to list1");
+            list1->readyToUpload=true;
+        }else if(list2->empty){
+            list2->empty = false;
+            Serial.println("collecting to list2");
+            collect(list2);
+            Serial.println("collected to list2");
+            list2->readyToUpload = true;
+        }
+        yield();
+    }
+}
+
+void uploadingCore(void * pvParameters){
+    while(true){
+        mqttConnectionHealth();
+        if(list1->readyToUpload){
+            Serial.println("publishing list1");
+            list1->uploadToMQTT(mqtt_client, deviceName);
+            Serial.println("published list1");
+            delete list1;
+            list1 = new vec3LinkedList();
+        }else if(list2->readyToUpload){
+            Serial.println("publishing list2");
+            list2->uploadToMQTT(mqtt_client, deviceName);
+            Serial.println("published list2");
+            delete list2;
+            list2 = new vec3LinkedList();
+        }
+        yield();
+    }
+}
+
+void loop(){
 }

@@ -25,6 +25,8 @@ class vec3LinkedList{
         long count = 0;
         long startTime;
     public:
+        bool empty;
+        bool readyToUpload;
         void setTime(long time);
         vec3LinkedList();
         void pushBack(vec3 v);

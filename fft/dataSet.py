@@ -33,7 +33,7 @@ class dataSet:
     
     def fft(self):
         self.__convertTimes()
-        self.freqs = np.fft.fftfreq(len(self.xVals))
+        self.freqs = np.fft.fftfreq(len(self.xVals), self.Lx)
         self.mask = self.freqs > 0
         fft_vals = np.fft.fft(self.xVals)
         self.fft_theo = 2.0*np.abs(fft_vals/len(self.xVals))

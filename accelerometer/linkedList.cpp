@@ -25,6 +25,8 @@ long vec3LinkedListItem::getTime(){
 vec3LinkedList::vec3LinkedList(){
     start = NULL;
     current = NULL;
+    empty = true;
+    readyToUpload = false;
 }
 
 void vec3LinkedList::pushBack(vec3 v){

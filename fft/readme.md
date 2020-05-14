@@ -6,3 +6,5 @@
 
 
 ### Működés
+
+## Skypi singnal peeks

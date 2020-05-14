@@ -23,7 +23,9 @@ def on_message(client, userdata, msg):
     if device in dataSets:
         if 'startTime' in dataType:    
             dataSets[device].startTime = int(msg.payload.decode("utf-8"))
-            dataSets[device].sendToInfluxDB(databaseName)
+            dataSets[device].createPlots()
+            dataSets[device].showPlots()
+            #dataSets[device].sendToInfluxDB(databaseName)
             return
         data = msg.payload.decode("utf-8").split(",")
         dataSets[device].addData(data[1], data[2], data[3], data[0])
